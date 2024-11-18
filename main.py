@@ -21,6 +21,14 @@ try:
 except NoSuchElementException:
     pass
 
+try:
+    driver.find_element(By.ID, "cf-error-details")
+    print(f"[ERROR] TwinGalaxies is currently offline")
+    driver.quit()
+    quit()
+except NoSuchElementException:
+    pass
+
 records = {}
 
 while True:
