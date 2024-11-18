@@ -4,11 +4,12 @@ from selenium import webdriver
 from selenium_stealth import stealth
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.actions.wheel_input import ScrollOrigin
 from selenium.common.exceptions import NoSuchElementException
 
 options = webdriver.ChromeOptions()
 options.page_load_strategy = "eager"
-options.add_argument("--headless=new")
+#options.add_argument("--headless=new")
 options.add_argument("--window-size=1280,1000")
 
 driver = webdriver.Chrome(options=options)
@@ -40,36 +41,39 @@ records = {}
 while True:
     category_sections = driver.find_elements(By.CLASS_NAME, "game-post")
     for category_section in category_sections:
+        scroll_origin = ScrollOrigin.from_element(category_section)
+        ActionChains(driver).scroll_from_origin(scroll_origin, 0, 200).perform()
         total_records = category_section.find_element(By.CSS_SELECTOR, "div.records").get_attribute("data-pcount")
         if total_records == "0":
             continue
         original_category_name = category_section.find_element(By.CSS_SELECTOR, "div.player-coun > b").text
-        formatted_category_name = original_category_name.translate(str.maketrans("[]/", "()|"))[:31]
-        records[formatted_category_name] = pd.DataFrame({
-            "Player": [],
-            "Points": [],
-            "ESI": [],
-            "Date Submitted": [],
-        })
-        records_section = category_section.find_element(By.CLASS_NAME, "gd-rank-list")
+        formatted_category_name = original_category_name.translate(str.maketrans("[]/:", "()|>"))[:31]
+        records[formatted_category_name] = pd.DataFrame({})
+        if int(total_records) > 5:
+            show_performances_button = category_section.find_element(By.CSS_SELECTOR, "div.gd-other-links > a:nth-of-type(2)")
+            show_performances_button.click()
+            driver.switch_to.window(driver.window_handles[1])
+            records_section = driver.find_element(By.CLASS_NAME, "gd-rank-list")
+        else:
+            records_section = category_section.find_element(By.CLASS_NAME, "gd-rank-list")
         category_records = records_section.find_elements(By.CSS_SELECTOR, "li > div:nth-child(1)")
         for record in category_records:
             player_name = record.find_element(By.CSS_SELECTOR, "div:nth-child(2) > h5:nth-child(1) > a:nth-child(1)").text
             date_submitted = record.find_element(By.CSS_SELECTOR, "div:nth-child(2) > div:nth-child(2) > div:nth-child(1) > span:nth-child(2)").text
             esi = record.find_element(By.CSS_SELECTOR, "div:nth-child(2) > div:nth-child(2) > div:nth-child(3) > span:nth-child(2)").text
-            try:
-                points = record.find_element(By.CSS_SELECTOR, "div:nth-child(4) > h3:nth-child(2) > a:nth-child(1)").text
-            except NoSuchElementException:
-                points = record.find_element(By.CSS_SELECTOR, "div:nth-child(4) > h3:nth-child(2)").text
+            score_type, points = record.find_element(By.CSS_SELECTOR, "div:nth-child(4)").text.split("\n")
             record_row = {
                 "Player": player_name,
-                "Points": points,
+                score_type: points,
                 "ESI": esi,
                 "Date Submitted": date_submitted,
             }
             records[formatted_category_name] = pd.concat(
                 [records[formatted_category_name], pd.DataFrame([record_row])], ignore_index=True
             )
+        if len(driver.window_handles) > 1:
+            driver.close()
+            driver.switch_to.window(driver.window_handles[0])
     page_navigation_section = driver.find_element(By.ID, "paginn")
     ActionChains(driver).move_to_element(page_navigation_section).perform()
     page_navigation_buttons = page_navigation_section.find_elements(By.CLASS_NAME, "pagesPagination")
