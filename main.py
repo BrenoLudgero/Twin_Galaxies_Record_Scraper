@@ -8,7 +8,8 @@ from selenium.common.exceptions import NoSuchElementException
 
 main_url = "https://www.twingalaxies.com/game/"
 
-records = {}
+current_directory = Path(__file__).parent
+Path(f"{current_directory}/TG_Records/").mkdir(exist_ok=True)
 
 paths_to_scrape = [
     "galaga/arcade",
@@ -34,7 +35,7 @@ for game_path in paths_to_scrape:
         quit()
     except NoSuchElementException:
         pass
-    records[game_path] = {}
+    records = {}
     while True:
         category_sections = driver.find_elements(By.CLASS_NAME, "game-post")
         for category_section in category_sections:
@@ -45,7 +46,7 @@ for game_path in paths_to_scrape:
                 continue
             original_category_name = category_section.find_element(By.CSS_SELECTOR, "div.player-coun > b").text
             formatted_category_name = original_category_name.translate(str.maketrans("[]/:", "()|>"))[:31]
-            records[game_path][formatted_category_name] = pd.DataFrame({})
+            records[formatted_category_name] = pd.DataFrame({})
             if int(total_records) > 5:
                 show_performances_button = category_section.find_element(By.CSS_SELECTOR, "div.gd-other-links > a:nth-of-type(2)")
                 show_performances_button.click()
@@ -65,8 +66,8 @@ for game_path in paths_to_scrape:
                     "ESI": esi,
                     "Date Submitted": date_submitted,
                 }
-                records[game_path][formatted_category_name] = pd.concat(
-                    [records[game_path][formatted_category_name], pd.DataFrame([record_row])], ignore_index=True
+                records[formatted_category_name] = pd.concat(
+                    [records[formatted_category_name], pd.DataFrame([record_row])], ignore_index=True
                 )
             if len(driver.window_handles) > 1:
                 driver.close()
@@ -80,13 +81,8 @@ for game_path in paths_to_scrape:
         else:
             driver.quit()
             break
-
-current_directory = Path(__file__).parent
-Path(f"{current_directory}/TG_Records/").mkdir(exist_ok=True)
-
-for game, categories in records.items():
-    file_name = game[:-1] if game.endswith("/") else game
+    file_name = game_path[:-1] if game_path.endswith("/") else game_path
     file_name = file_name.replace("/", "_").lower()
     with pd.ExcelWriter(f"TG_Records/{file_name}.xlsx", engine="openpyxl") as writer:
-        for category_name, category_data in categories.items():
+        for category_name, category_data in records.items():
             category_data.to_excel(writer, sheet_name=category_name, index=False)
