@@ -1,1 +1,1 @@
-# Twin_Galaxies_Scraper
+# Twin Galaxies Record Scraper
