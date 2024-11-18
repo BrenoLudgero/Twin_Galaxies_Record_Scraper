@@ -3,13 +3,12 @@ from pathlib import Path
 from seleniumbase import Driver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.common.actions.wheel_input import ScrollOrigin
 from selenium.common.exceptions import NoSuchElementException
 
 main_url = "https://www.twingalaxies.com/game/"
 
 current_directory = Path(__file__).parent
-Path(f"{current_directory}/TG_Records/").mkdir(exist_ok=True)
+Path(f"{current_directory}/TG Records/").mkdir(exist_ok=True)
 
 paths_to_scrape = [
     "galaga/arcade",
@@ -18,7 +17,8 @@ paths_to_scrape = [
 ]
 
 for game_path in paths_to_scrape:
-    driver = Driver(uc=True, headless=True)
+    driver = Driver(uc=True, headless2=True, block_images=True)
+    driver.maximize_window()
     game_page = f"{main_url}{game_path}"
     driver.get(game_page)
     try:
@@ -39,8 +39,6 @@ for game_path in paths_to_scrape:
     while True:
         category_sections = driver.find_elements(By.CLASS_NAME, "game-post")
         for category_section in category_sections:
-            scroll_origin = ScrollOrigin.from_element(category_section)
-            ActionChains(driver).scroll_from_origin(scroll_origin, 0, 200).perform()
             total_records = category_section.find_element(By.CSS_SELECTOR, "div.records").get_attribute("data-pcount")
             if total_records == "0":
                 continue
@@ -49,6 +47,7 @@ for game_path in paths_to_scrape:
             records[formatted_category_name] = pd.DataFrame({})
             if int(total_records) > 5:
                 show_performances_button = category_section.find_element(By.CSS_SELECTOR, "div.gd-other-links > a:nth-of-type(2)")
+                ActionChains(driver).scroll_to_element(show_performances_button).perform()
                 show_performances_button.click()
                 driver.switch_to.window(driver.window_handles[1])
                 records_section = driver.find_element(By.CLASS_NAME, "gd-rank-list")
@@ -83,6 +82,6 @@ for game_path in paths_to_scrape:
             break
     file_name = game_path[:-1] if game_path.endswith("/") else game_path
     file_name = file_name.replace("/", "_").lower()
-    with pd.ExcelWriter(f"TG_Records/{file_name}.xlsx", engine="openpyxl") as writer:
+    with pd.ExcelWriter(f"TG Records/{file_name}.xlsx", engine="openpyxl") as writer:
         for category_name, category_data in records.items():
             category_data.to_excel(writer, sheet_name=category_name, index=False)
