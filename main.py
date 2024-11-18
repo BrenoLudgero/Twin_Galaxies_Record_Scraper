@@ -1,27 +1,12 @@
 import pandas as pd
 from pathlib import Path
-from selenium import webdriver
-from selenium_stealth import stealth
+from seleniumbase import Driver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.actions.wheel_input import ScrollOrigin
 from selenium.common.exceptions import NoSuchElementException
 
-options = webdriver.ChromeOptions()
-options.page_load_strategy = "eager"
-#options.add_argument("--headless=new")
-options.add_argument("--window-size=1280,1000")
-
-driver = webdriver.Chrome(options=options)
-stealth(
-    driver,
-    languages=["en-US", "en"],
-    vendor="Google Inc.",
-    platform="Win32",
-    webgl_vendor="Intel Inc.",
-    renderer="Intel Iris OpenGL Engine",
-    fix_hairline=True,
-)
+driver = Driver(uc=True, headless=True)
 
 main_url = "https://www.twingalaxies.com/game/"
 game_path = "galaga/arcade/"
