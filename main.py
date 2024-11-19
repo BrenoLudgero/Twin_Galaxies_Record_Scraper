@@ -10,7 +10,7 @@ def main():
         if records:
             file_name = game_path.strip("/").replace("/", "_").lower()
             save_to_excel(records, file_name, RECORDS_FOLDER_DIRECTORY)
-            print(f"[INFO] Records saved to {RECORDS_FOLDER_DIRECTORY / file_name}")
+            print(f"[INFO] Records saved to {RECORDS_FOLDER_DIRECTORY}/{file_name}")
         else:
             return
 
