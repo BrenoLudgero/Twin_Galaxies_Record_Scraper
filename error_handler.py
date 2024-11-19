@@ -12,7 +12,7 @@ def is_invalid_page(driver, game_page):
 def is_website_offline(driver):
     try:
         driver.find_element(By.ID, "cf-error-details")
-        print("[ERROR] TwinGalaxies is currently offline")
+        print("[ERROR] TwinGalaxies.com is currently offline")
         return True
     except NoSuchElementException:
         return False

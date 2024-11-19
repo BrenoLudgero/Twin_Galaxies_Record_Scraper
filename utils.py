@@ -1,4 +1,3 @@
-from pathlib import Path
 from pandas import ExcelWriter
 
 def sanitize_category_name(category_name):
@@ -6,9 +5,6 @@ def sanitize_category_name(category_name):
     Removes invalid characters from the category name and 
     limits its length to comply with Excel's sheet name format
     """
-    return category_name.translate(str.maketrans("[]/:", "()|>"))[:31]
-
-def sanitize_category_name(category_name):
     return category_name.translate(str.maketrans("[]/:", "()|>"))[:31]
 
 def save_to_excel(records, file_name, output_directory):
