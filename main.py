@@ -1,87 +1,16 @@
-import pandas as pd
-from pathlib import Path
-from seleniumbase import Driver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.action_chains import ActionChains
-from selenium.common.exceptions import NoSuchElementException
+from config import MAIN_URL, PATHS_TO_SCRAPE, RECORDS_FOLDER_DIRECTORY
+from scraper import RecordScraper
+from utils import save_to_excel
 
-main_url = "https://www.twingalaxies.com/game/"
+def main():
+    scraper = RecordScraper(MAIN_URL)
+    print(f"[INFO] Scraping process initiated. Please wait.")
+    for game_path in PATHS_TO_SCRAPE:
+        records = scraper.scrape_game_records(game_path)
+        if records:
+            file_name = game_path.strip("/").replace("/", "_").lower()
+            save_to_excel(records, file_name, RECORDS_FOLDER_DIRECTORY)
+            print(f"[INFO] Records saved to {RECORDS_FOLDER_DIRECTORY}")
 
-current_directory = Path(__file__).parent
-Path(f"{current_directory}/TG Records/").mkdir(exist_ok=True)
-
-paths_to_scrape = [
-    "galaga/arcade",
-    "devils-crush/turbografx-16",
-    "burnout-2-point-of-impact/nintendo-game-cube/",
-]
-
-for game_path in paths_to_scrape:
-    driver = Driver(uc=True, headless2=True, block_images=True)
-    driver.maximize_window()
-    game_page = f"{main_url}{game_path}"
-    driver.get(game_page)
-    try:
-        driver.find_element(By.CSS_SELECTOR, ".panel-body > div:nth-child(1) > div:nth-child(1)")
-        print(f"[ERROR] Invalid game page: {main_url}")
-        driver.quit()
-        quit()
-    except NoSuchElementException:
-        pass
-    try:
-        driver.find_element(By.ID, "cf-error-details")
-        print(f"[ERROR] TwinGalaxies is currently offline")
-        driver.quit()
-        quit()
-    except NoSuchElementException:
-        pass
-    records = {}
-    while True:
-        category_sections = driver.find_elements(By.CLASS_NAME, "game-post")
-        for category_section in category_sections:
-            total_records = category_section.find_element(By.CSS_SELECTOR, "div.records").get_attribute("data-pcount")
-            if total_records == "0":
-                continue
-            original_category_name = category_section.find_element(By.CSS_SELECTOR, "div.player-coun > b").text
-            formatted_category_name = original_category_name.translate(str.maketrans("[]/:", "()|>"))[:31]
-            records[formatted_category_name] = pd.DataFrame({})
-            if int(total_records) > 5:
-                show_performances_button = category_section.find_element(By.CSS_SELECTOR, "div.gd-other-links > a:nth-of-type(2)")
-                ActionChains(driver).scroll_to_element(show_performances_button).perform()
-                show_performances_button.click()
-                driver.switch_to.window(driver.window_handles[1])
-                records_section = driver.find_element(By.CLASS_NAME, "gd-rank-list")
-            else:
-                records_section = category_section.find_element(By.CLASS_NAME, "gd-rank-list")
-            category_records = records_section.find_elements(By.CSS_SELECTOR, "li > div:nth-child(1)")
-            for record in category_records:
-                player_name = record.find_element(By.CSS_SELECTOR, "div:nth-child(2) > h5:nth-child(1) > a:nth-child(1)").text
-                date_submitted = record.find_element(By.CSS_SELECTOR, "div:nth-child(2) > div:nth-child(2) > div:nth-child(1) > span:nth-child(2)").text
-                esi = record.find_element(By.CSS_SELECTOR, "div:nth-child(2) > div:nth-child(2) > div:nth-child(3) > span:nth-child(2)").text
-                score_type, points = record.find_element(By.CSS_SELECTOR, "div:nth-child(4)").text.split("\n")
-                record_row = {
-                    "Player": player_name,
-                    score_type: points,
-                    "ESI": esi,
-                    "Date Submitted": date_submitted,
-                }
-                records[formatted_category_name] = pd.concat(
-                    [records[formatted_category_name], pd.DataFrame([record_row])], ignore_index=True
-                )
-            if len(driver.window_handles) > 1:
-                driver.close()
-                driver.switch_to.window(driver.window_handles[0])
-        page_navigation_section = driver.find_element(By.ID, "paginn")
-        ActionChains(driver).move_to_element(page_navigation_section).perform()
-        page_navigation_buttons = page_navigation_section.find_elements(By.CLASS_NAME, "pagesPagination")
-        last_navigation_button = page_navigation_buttons[-1]
-        if last_navigation_button.text == "Next":
-            last_navigation_button.click()
-        else:
-            driver.quit()
-            break
-    file_name = game_path[:-1] if game_path.endswith("/") else game_path
-    file_name = file_name.replace("/", "_").lower()
-    with pd.ExcelWriter(f"TG Records/{file_name}.xlsx", engine="openpyxl") as writer:
-        for category_name, category_data in records.items():
-            category_data.to_excel(writer, sheet_name=category_name, index=False)
+if __name__ == "__main__":
+    main()
