@@ -1,5 +1,4 @@
 import logging
-from threading import Thread
 from pandas import DataFrame
 from selenium.webdriver.common.by import By
 from utils import *
@@ -68,6 +67,3 @@ class RecordScraper:
             logging.info("Scraping process complete!")
         else:
             logging.error("List of games is empty.")
-
-    def run(self, urls_to_scrape):
-        Thread(target=self.scrape_all_games, args=(urls_to_scrape,)).start()

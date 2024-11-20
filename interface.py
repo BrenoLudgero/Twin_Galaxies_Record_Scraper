@@ -1,5 +1,6 @@
 import logging
 import customtkinter as ctk
+from threading import Thread
 from config import INSTRUCTIONS
 from logging_handler import TextboxLogHandler
 
@@ -54,7 +55,12 @@ class Interface(ctk.CTk):
         y = int(((screen_height/2) - (self.window_height/1.9)) * self._get_window_scaling())
         return f"{self.window_width}x{self.window_height}+{x}+{y}"
 
+    def run_scraper(self, urls_to_scrape):
+        self.scraper.scrape_all_games(urls_to_scrape)
+        self.after(0, lambda: self.button.configure(state="normal"))
+
     def start_scraping_process(self):
+        self.button.configure(state="disabled")
         lines = self.url_list_textbox.get("0.0", "end").splitlines()
         urls_to_scrape = [line.replace(" ", "") for line in lines if line.strip()]
-        self.scraper.run(urls_to_scrape)
+        Thread(target=self.run_scraper, args=(urls_to_scrape,)).start()
