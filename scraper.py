@@ -1,3 +1,4 @@
+import logging
 from threading import Thread
 from pandas import DataFrame
 from selenium.webdriver.common.by import By
@@ -57,16 +58,16 @@ class RecordScraper:
 
     def scrape_all_games(self, urls_to_scrape):
         if urls_to_scrape:
-            print(f"[INFO] Scraping process initiated. Please wait.")
+            logging.info("Scraping process initiated. Please wait.")
             for url in urls_to_scrape:
                 records = self.scrape_game_records(url)
                 if records:
                     file_name = get_formatted_file_name_from_url(url)
                     save_to_excel(records, file_name)
-                    print(f"[INFO] Records saved to {FOLDER_NAME}/{file_name}.xlsx")
-            print(f"[INFO] Scraping process complete!")
+                    logging.info(f"Records saved to {FOLDER_NAME}/{file_name}.xlsx")
+            logging.info("Scraping process complete!")
         else:
-            print(f"[ERROR] List of games is empty.")
+            logging.error("List of games is empty.")
 
     def run(self, urls_to_scrape):
         Thread(target=self.scrape_all_games, args=(urls_to_scrape,)).start()

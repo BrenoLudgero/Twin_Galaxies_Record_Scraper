@@ -1,5 +1,7 @@
+import logging
 import customtkinter as ctk
 from config import INSTRUCTIONS
+from logging_handler import TextboxLogHandler
 
 ctk.set_default_color_theme("dark-blue")
 
@@ -35,8 +37,15 @@ class Interface(ctk.CTk):
         self.button = ctk.CTkButton(self, text="Start", command=self.start_scraping_process)
         self.button.grid(row=1, column=2, sticky="nwes", padx=(3, 10), pady=10)
 
-        self.logs_textbox = ctk.CTkTextbox(self, corner_radius=0, border_width=1, fg_color="lightgray", state="disabled")
+        self.logs_textbox = ctk.CTkTextbox(self, corner_radius=0, border_width=1, state="disabled")
         self.logs_textbox.grid(row=2, column=0, columnspan=3, sticky="nwes", padx=10, pady=(0, 10))
+
+        self.logs_textbox_label = ctk.CTkLabel(self, text="Logs", corner_radius=2, height=25, width=50)
+        self.logs_textbox_label.grid(row=2, column=2, columnspan=2, sticky="ne", padx=(0, 13), pady=(3, 0))
+        
+        # LOGGING HANDLING
+        self.logging_handler = TextboxLogHandler(self.logs_textbox)
+        self.logging_handler.configure_logging()
 
     def get_centered_window_coords(self):
         screen_width = self.winfo_screenwidth()
