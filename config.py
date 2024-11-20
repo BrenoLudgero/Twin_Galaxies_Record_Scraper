@@ -1,15 +1,19 @@
 import os
 import sys
 
-# Determines the current path for the script or executable
-if getattr(sys, "frozen", False):
-    current_directory = os.path.dirname(sys.executable)
-elif __file__:
-    current_directory = os.path.dirname(__file__)
-
 FOLDER_NAME = "TG Records"
-RECORDS_FOLDER_DIRECTORY = os.path.join(current_directory, FOLDER_NAME)
 
-# Creates the records folder if not found
-if not os.path.isdir(RECORDS_FOLDER_DIRECTORY):
-    os.makedirs(RECORDS_FOLDER_DIRECTORY)
+# Determines the current path for the script or executable
+def get_current_directory():
+    if getattr(sys, "frozen", False):
+        return os.path.dirname(sys.executable)
+    elif __file__:
+        return os.path.dirname(__file__)
+
+def get_records_folder_path():
+    return os.path.join(get_current_directory(), FOLDER_NAME)
+
+def create_records_folder():
+    records_folder = get_records_folder_path()
+    if not os.path.isdir(records_folder):
+        os.makedirs(records_folder)

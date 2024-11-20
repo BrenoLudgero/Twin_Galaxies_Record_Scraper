@@ -1,4 +1,5 @@
 from pandas import ExcelWriter
+from config import get_records_folder_path
 
 # Removes invalid characters from the category name and 
 # limits its length to comply with Excel's sheet name format
@@ -23,8 +24,8 @@ def get_formatted_file_name_from_url(url):
     return "_".join(result)
 
 # Saves records to an Excel file with separate sheets for each category
-def save_to_excel(records, file_name, output_directory):
-    file_path = f"{output_directory}/{file_name}.xlsx"
+def save_to_excel(records, file_name):
+    file_path = f"{get_records_folder_path()}/{file_name}.xlsx"
     with ExcelWriter(file_path, engine="openpyxl") as writer:
-        for category_name, data in records.items():
-            data.to_excel(writer, sheet_name=category_name, index=False)
+       for category_name, data in records.items():
+           data.to_excel(writer, sheet_name=category_name, index=False)

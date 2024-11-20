@@ -5,7 +5,7 @@ from utils import *
 from navigation import *
 from driver import create_driver
 from error_handler import page_errors_detected
-from config import FOLDER_NAME, RECORDS_FOLDER_DIRECTORY
+from config import FOLDER_NAME
 
 class RecordScraper:
     def __init__(self):
@@ -62,7 +62,7 @@ class RecordScraper:
                 records = self.scrape_game_records(url)
                 if records:
                     file_name = get_formatted_file_name_from_url(url)
-                    save_to_excel(records, file_name, RECORDS_FOLDER_DIRECTORY)
+                    save_to_excel(records, file_name)
                     print(f"[INFO] Records saved to {FOLDER_NAME}/{file_name}.xlsx")
             print(f"[INFO] Scraping process complete!")
         else:
