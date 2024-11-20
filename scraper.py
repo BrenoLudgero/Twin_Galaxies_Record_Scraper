@@ -61,7 +61,7 @@ class RecordScraper:
             for game_path in paths_to_scrape:
                 records = self.scrape_game_records(game_path)
                 if records:
-                    file_name = game_path.strip("/").replace("/", "_").lower()
+                    file_name = get_formatted_file_name_from_url(game_path)
                     save_to_excel(records, file_name, RECORDS_FOLDER_DIRECTORY)
                     print(f"[INFO] Records saved to {FOLDER_NAME}/{file_name}")
             print(f"[INFO] Scraping process complete!")

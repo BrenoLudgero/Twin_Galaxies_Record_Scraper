@@ -13,6 +13,17 @@ def ensure_proper_page_link(link, main_url):
         return "https://" + link
     return link
 
+# Extracts the the name, platform, and category
+# present in the url and separates them with a "_"
+def get_formatted_file_name_from_url(url):
+    url = url + "/" if not url.endswith("/") else url
+    parts = [part for part in url.split("/") if part]
+    if len(parts) > 3:
+        result = parts[3:6]
+    else:
+        result = [parts[2]]
+    return "_".join(result)
+
 # Saves records to an Excel file with separate sheets for each category
 def save_to_excel(records, file_name, output_directory):
     file_path = f"{output_directory}/{file_name}.xlsx"
