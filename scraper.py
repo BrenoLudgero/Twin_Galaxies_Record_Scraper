@@ -1,10 +1,10 @@
 from threading import Thread
 from pandas import DataFrame
 from selenium.webdriver.common.by import By
+from utils import *
 from navigation import *
 from driver import create_driver
 from error_handler import page_errors_detected
-from utils import sanitize_category_name, save_to_excel
 from config import FOLDER_NAME, RECORDS_FOLDER_DIRECTORY
 
 class RecordScraper:
@@ -37,7 +37,7 @@ class RecordScraper:
         driver = create_driver()
         records = {}
         try:
-            game_page = f"{self.main_url}{game_path}"
+            game_page = ensure_proper_page_link(game_path, self.main_url)
             driver.get(game_page)
             if page_errors_detected(driver, game_page):
                 return {}
