@@ -27,10 +27,7 @@ class RecordScraper:
                 "Player": record.find_element(By.CSS_SELECTOR, "div:nth-child(2) > h5:nth-child(1) > a:nth-child(1)").text,
                 "Date Submitted": record.find_element(By.CSS_SELECTOR, "div:nth-child(2) > div:nth-child(2) > div:nth-child(1) > span:nth-child(2)").text,
                 "ESI": record.find_element(By.CSS_SELECTOR, "div:nth-child(2) > div:nth-child(2) > div:nth-child(3) > span:nth-child(2)").text,
-                **dict(zip(
-                    ["Score Type", "Points"],
-                    record.find_element(By.CSS_SELECTOR, "div:nth-child(4)").text.split("\n")
-                )),
+                **dict(zip(["Score Type", "Points"], record.find_element(By.CSS_SELECTOR, "div:nth-child(4)").text.split("\n"))),
             }
             category_records.append(record_data)
         close_performances_tab_if_open(driver)
@@ -50,9 +47,7 @@ class RecordScraper:
                     total_records = section.find_element(By.CSS_SELECTOR, "div.records").get_attribute("data-pcount")
                     if total_records == "0":
                         continue
-                    category_name = sanitize_category_name(
-                        section.find_element(By.CSS_SELECTOR, "div.player-coun > b").text
-                    )
+                    category_name = sanitize_category_name(section.find_element(By.CSS_SELECTOR, "div.player-coun > b").text)
                     records[category_name] = self.scrape_category_records(driver, section)
                 if not go_to_next_page_if_available(driver):
                     break
