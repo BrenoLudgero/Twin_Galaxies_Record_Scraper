@@ -69,8 +69,6 @@ class RecordScraper:
                     file_name = game_path.strip("/").replace("/", "_").lower()
                     save_to_excel(records, file_name, RECORDS_FOLDER_DIRECTORY)
                     print(f"[INFO] Records saved to {FOLDER_NAME}/{file_name}")
-                else:
-                    return
             print(f"[INFO] Scraping process complete!")
         else:
             print(f"[ERROR] List of games is empty.")
