@@ -17,11 +17,9 @@ def ensure_proper_page_link(link, main_url):
 # present in the url and separates them with a "_"
 def get_formatted_file_name_from_url(url):
     url = url + "/" if not url.endswith("/") else url
-    parts = [part for part in url.split("/") if part]
-    if len(parts) > 3:
-        result = parts[3:6]
-    else:
-        result = [parts[2]]
+    shortened_url = url.split("game/")[1]
+    parts = [part for part in shortened_url.split("/") if part]
+    result = parts[0:3] if len(parts) > 3 else parts
     return "_".join(result)
 
 # Saves records to an Excel file with separate sheets for each category
