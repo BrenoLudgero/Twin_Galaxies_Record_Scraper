@@ -5,13 +5,13 @@ from pandas import ExcelWriter
 def sanitize_category_name(category_name):
     return category_name.translate(str.maketrans("[]/:", "()|>"))[:31]
 
-def ensure_proper_page_link(link, main_url):
-    link = link.lower()
-    if "twingalaxies.com" not in link:
-        return f"{main_url}{link}"
-    if not link.startswith(("http://", "https://")):
-        return "https://" + link
-    return link
+def ensure_proper_url(url, main_url):
+    url = url.lower()
+    if "twingalaxies.com" not in url:
+        return f"{main_url}{url}"
+    if not url.startswith(("http://", "https://")):
+        return "https://" + url
+    return url
 
 # Extracts the the name, platform, and category
 # present in the url and separates them with a "_"

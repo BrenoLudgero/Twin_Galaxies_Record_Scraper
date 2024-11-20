@@ -22,8 +22,8 @@ class Interface(ctk.CTk):
         self.rowconfigure(2, weight=3)
 
         # ELEMENTS
-        self.paths_list_textbox = ctk.CTkTextbox(master=self, corner_radius=4, border_width=2, wrap="word")
-        self.paths_list_textbox.grid(row=0, column=0, rowspan=2, columnspan=2, sticky="news", padx=10, pady=10)
+        self.url_list_textbox = ctk.CTkTextbox(master=self, corner_radius=4, border_width=2, wrap="word")
+        self.url_list_textbox.grid(row=0, column=0, rowspan=2, columnspan=2, sticky="nwes", padx=10, pady=(26, 10))
 
         self.frame = ctk.CTkFrame(master=self, border_width=1, fg_color="white")
         self.frame.grid(row=0, column=2, sticky="news", padx=(3, 10), pady=(10, 0))
@@ -42,6 +42,6 @@ class Interface(ctk.CTk):
         return f"{self.window_width}x{self.window_height}+{x}+{y}"
 
     def start_scraping_process(self):
-        lines = self.paths_list_textbox.get("0.0", "end").splitlines()
-        paths_to_scrape = [line.replace(" ", "") for line in lines if line.strip()]
-        self.scraper.run(paths_to_scrape)
+        lines = self.url_list_textbox.get("0.0", "end").splitlines()
+        urls_to_scrape = [line.replace(" ", "") for line in lines if line.strip()]
+        self.scraper.run(urls_to_scrape)

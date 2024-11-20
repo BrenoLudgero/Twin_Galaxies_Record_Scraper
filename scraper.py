@@ -33,11 +33,11 @@ class RecordScraper:
         close_performances_tab_if_open(driver)
         return DataFrame(category_records)
 
-    def scrape_game_records(self, game_path):
+    def scrape_game_records(self, url):
         driver = create_driver()
         records = {}
         try:
-            game_page = ensure_proper_page_link(game_path, self.main_url)
+            game_page = ensure_proper_url(url, self.main_url)
             driver.get(game_page)
             if page_errors_detected(driver, game_page):
                 return {}
@@ -55,18 +55,18 @@ class RecordScraper:
             driver.quit()
         return records
 
-    def scrape_all_games(self, paths_to_scrape):
-        if paths_to_scrape:
+    def scrape_all_games(self, urls_to_scrape):
+        if urls_to_scrape:
             print(f"[INFO] Scraping process initiated. Please wait.")
-            for game_path in paths_to_scrape:
-                records = self.scrape_game_records(game_path)
+            for url in urls_to_scrape:
+                records = self.scrape_game_records(url)
                 if records:
-                    file_name = get_formatted_file_name_from_url(game_path)
+                    file_name = get_formatted_file_name_from_url(url)
                     save_to_excel(records, file_name, RECORDS_FOLDER_DIRECTORY)
-                    print(f"[INFO] Records saved to {FOLDER_NAME}/{file_name}")
+                    print(f"[INFO] Records saved to {FOLDER_NAME}/{file_name}.xlsx")
             print(f"[INFO] Scraping process complete!")
         else:
             print(f"[ERROR] List of games is empty.")
 
-    def run(self, paths_to_scrape):
-        Thread(target=self.scrape_all_games, args=(paths_to_scrape,)).start()
+    def run(self, urls_to_scrape):
+        Thread(target=self.scrape_all_games, args=(urls_to_scrape,)).start()
