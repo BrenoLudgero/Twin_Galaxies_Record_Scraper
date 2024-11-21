@@ -37,9 +37,8 @@ class RecordScraper:
         driver = create_driver()
         records = {}
         try:
-            game_page = ensure_proper_url(url, self.main_url)
-            driver.get(game_page)
-            if page_errors_detected(driver, game_page):
+            driver.get(url)
+            if page_errors_detected(driver, url):
                 return {}
             while True:
                 category_sections = driver.find_elements(By.CLASS_NAME, "game-post")
@@ -59,9 +58,10 @@ class RecordScraper:
         if urls_to_scrape:
             logging.info("Scraping process initiated. Please wait.")
             for url in urls_to_scrape:
-                records = self.scrape_game_records(url)
+                game_page = ensure_proper_url(url, self.main_url)
+                records = self.scrape_game_records(game_page)
                 if records:
-                    file_name = get_formatted_file_name_from_url(url)
+                    file_name = get_formatted_file_name_from_url(game_page)
                     save_to_excel(records, file_name)
                     logging.info(f"Records saved to {FOLDER_NAME}/{file_name}.xlsx")
             logging.info("Scraping process complete!")
