@@ -14,7 +14,7 @@ class TextboxLogHandler(logging.Handler):
 
     def configure_logging(self):
         self.setLevel(logging.INFO)
-        log_formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s", "%H:%M:%S")
+        log_formatter = logging.Formatter("%(asctime)s %(levelname)s:  %(message)s", "%H:%M:%S")
         self.setFormatter(log_formatter)
         logger = logging.getLogger()
         logger.setLevel(logging.INFO)
