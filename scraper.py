@@ -1,4 +1,5 @@
 import logging
+import traceback
 from pandas import DataFrame
 from selenium.webdriver.common.by import By
 from utils import *
@@ -58,12 +59,16 @@ class RecordScraper:
         if urls_to_scrape:
             logging.info("Scraping process initiated. Please wait.")
             for url in urls_to_scrape:
-                game_page = ensure_proper_url(url, self.main_url)
-                records = self.scrape_game_records(game_page)
-                if records:
-                    file_name = get_formatted_file_name_from_url(game_page)
-                    save_to_excel(records, file_name)
-                    logging.info(f"Records saved to {FOLDER_NAME}/{file_name}.xlsx")
+                try:
+                    game_page = ensure_proper_url(url, self.main_url)
+                    logging.info(f"Scraping {game_page}")
+                    records = self.scrape_game_records(game_page)
+                    if records:
+                        file_name = get_formatted_file_name_from_url(game_page)
+                        save_to_excel(records, file_name)
+                        logging.info(f"Records saved to {FOLDER_NAME}/{file_name}.xlsx")
+                except Exception:
+                    logging.critical("Uncaught exception:", exc_info=True)
             logging.info("Scraping process complete!")
         else:
             logging.error("List of games is empty.")
