@@ -24,11 +24,12 @@ class RecordScraper:
         records_section = self.get_performances_section(driver, category_section)
         record_elements = records_section.find_elements(By.CSS_SELECTOR, "li > div:nth-child(1)")
         for record in record_elements:
+            score_type, points = record.find_element(By.CSS_SELECTOR, "div:nth-child(4)").text.split("\n")
             record_data = {
                 "Player": record.find_element(By.CSS_SELECTOR, "div:nth-child(2) > h5:nth-child(1) > a:nth-child(1)").text,
                 "Date Submitted": record.find_element(By.CSS_SELECTOR, "div:nth-child(2) > div:nth-child(2) > div:nth-child(1) > span:nth-child(2)").text,
                 "ESI": record.find_element(By.CSS_SELECTOR, "div:nth-child(2) > div:nth-child(2) > div:nth-child(3) > span:nth-child(2)").text,
-                **dict(zip(["Score Type", "Points"], record.find_element(By.CSS_SELECTOR, "div:nth-child(4)").text.split("\n"))),
+                score_type: points,
             }
             category_records.append(record_data)
         close_performances_tab_if_open(driver)
