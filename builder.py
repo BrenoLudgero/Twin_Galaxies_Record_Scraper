@@ -5,5 +5,6 @@ PyInstaller.__main__.run([
     "main.py",
     "--clean",
     "--onedir",
+    "--noconsole",
     "-nTG Record Scraper",
 ])
