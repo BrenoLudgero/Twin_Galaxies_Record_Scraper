@@ -1,20 +1,20 @@
-import logging
 import customtkinter as ctk
 from threading import Thread
-from config import INSTRUCTIONS
-from logging_handler import TextboxLogHandler
+from .strings import *
+from config.setup import *
+from .logger_redirector import LoggerRedirector
 
-ctk.set_default_color_theme("dark-blue")
+ctk.set_default_color_theme(WINDOW_COLOR_THEME)
 
-class Interface(ctk.CTk):
+class Window(ctk.CTk):
     def __init__(self, scraper):
         super().__init__()
         self.scraper = scraper
         
         # WINDOW SETUP
-        self.window_width = 800
-        self.window_height = 600
-        self.title("Twin Galaxies Record Scraper")
+        self.window_width = WINDOW_WIDTH
+        self.window_height = WINDOW_HEIGHT
+        self.title(WINDOW_TITLE)
         self.geometry(self.get_centered_window_coords())
         self.minsize(self.window_width, self.window_height)
         self.columnconfigure((0, 1), weight=6)
@@ -27,7 +27,7 @@ class Interface(ctk.CTk):
         self.url_list_textbox = ctk.CTkTextbox(self, corner_radius=4, border_width=2, wrap="word")
         self.url_list_textbox.grid(row=0, column=0, rowspan=2, columnspan=2, sticky="nwes", padx=10, pady=(26, 10))
 
-        self.url_list_label = ctk.CTkLabel(self, text="Links List", height=1)
+        self.url_list_label = ctk.CTkLabel(self, text=LINKS_LIST_LABEL, height=1)
         self.url_list_label.grid(row=0, column=0, columnspan=2, sticky="nwe", pady=(6, 0))
 
         self.textbox = ctk.CTkTextbox(self, border_width=1, wrap="word")
@@ -35,18 +35,18 @@ class Interface(ctk.CTk):
         self.textbox.configure(state="disabled")
         self.textbox.grid(row=0, column=2, sticky="nwes", padx=(3, 10), pady=(10, 0))
 
-        self.button = ctk.CTkButton(self, text="Start", command=self.start_scraping_process)
+        self.button = ctk.CTkButton(self, text=BUTTON_TEXT, command=self.start_scraping_process)
         self.button.grid(row=1, column=2, sticky="nwes", padx=(3, 10), pady=10)
 
         self.logs_textbox = ctk.CTkTextbox(self, corner_radius=0, border_width=1, state="disabled")
         self.logs_textbox.grid(row=2, column=0, columnspan=3, sticky="nwes", padx=10, pady=(0, 10))
 
-        self.logs_textbox_label = ctk.CTkLabel(self, text="Logs", corner_radius=2, height=25, width=50)
+        self.logs_textbox_label = ctk.CTkLabel(self, text=LOGS_TEXTBOX_LABEL, corner_radius=2, height=25, width=50)
         self.logs_textbox_label.grid(row=2, column=2, columnspan=2, sticky="ne", padx=(0, 13), pady=(3, 0))
         
-        # LOGGING HANDLING
-        self.logging_handler = TextboxLogHandler(self.logs_textbox)
-        self.logging_handler.configure_logging()
+        # LOGGER REDIRECTOR
+        self.logger_redirector = LoggerRedirector(self.logs_textbox)
+        self.logger_redirector.configure_logging()
 
     def get_centered_window_coords(self):
         screen_width = self.winfo_screenwidth()
@@ -61,6 +61,6 @@ class Interface(ctk.CTk):
 
     def start_scraping_process(self):
         self.button.configure(state="disabled")
-        lines = self.url_list_textbox.get("0.0", "end").splitlines()
-        urls_to_scrape = [line.replace(" ", "") for line in lines if line.strip()]
+        url_list_text = self.url_list_textbox.get("0.0", "end").splitlines()
+        urls_to_scrape = [line.replace(" ", "") for line in url_list_text if line.strip()]
         Thread(target=self.run_scraper, args=(urls_to_scrape,)).start()

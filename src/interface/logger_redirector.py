@@ -1,6 +1,6 @@
 import logging
 
-class TextboxLogHandler(logging.Handler):
+class LoggerRedirector(logging.Handler):
     def __init__(self, textbox):
         super().__init__()
         self.textbox = textbox

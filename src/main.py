@@ -14,14 +14,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from scraper import RecordScraper
-from interface import Interface
-from config import create_records_folder
+from scraping.record_scraper import RecordScraper
+from interface.window import Window
+from utils.file_handler import create_records_folder_if_missing
 
 def main():
     scraper = RecordScraper()
-    interface = Interface(scraper)
-    create_records_folder()
+    interface = Window(scraper)
+    create_records_folder_if_missing()
     interface.mainloop()
 
 if __name__ == "__main__":

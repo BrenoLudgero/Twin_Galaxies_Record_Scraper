@@ -1,8 +1,8 @@
 import PyInstaller.__main__
+from utils.file_handler import get_root_directory
 
-# Run this file to export the program to an executable
 PyInstaller.__main__.run([
-    "main.py",
+    f"{get_root_directory()}/src/main.py",
     "--clean",
     "--onedir",
     "--noconsole",

@@ -2,7 +2,7 @@
 
 This project provides a Python-based web scraper to extract high-score records from the Twin Galaxies website, allowing users to gather and analyze game records efficiently.
 
-![Interface](/github-images/interface.jpg)
+![Interface](/screenshots/interface.jpg)
 
 ## Features
 * Game Record Scraping: Automatically collects every performance from a game page
@@ -47,12 +47,14 @@ pip install -r requirements.txt
 ```
 
 ## Running from source
-Execute `main.py`
+Run `Twin_Galaxies_Record_Scraper/src/main.py`\
+Records will be saved to `Twin_Galaxies_Record_Scraper/Records/`
 
 ## Creating an executable
-Execute `builder.py`\
-Your executable will be created in a new folder inside `dist/` by the end of the process.\
-The new folder can be moved to another location, but its contents cannot.
+Run `Twin_Galaxies_Record_Scraper/src/builder.py`\
+The executable will be created in `Twin_Galaxies_Record_Scraper/dist/TG Record Scraper/` by the end of the process.\
+`TG Record Scraper/` may be moved to another location, but its contents may not.\
+Records will be saved to `TG Record Scraper/Records/`
 
 ## License
 This project is licensed under the GNU General Public License. See the LICENSE file for more details.
